@@ -78,13 +78,7 @@ public class Select extends TypifiedElement {
      * @return {@code true} if select has at least one selected option and {@code false} otherwise.
      */
     public boolean hasSelectedOption() {
-        for (WebElement option : getOptions()) {
-            if (option.isSelected()) {
-                return true;
-            }
-        }
-
-        return false;
+        return getOptions().stream().anyMatch(WebElement::isSelected);
     }
 
     /**
@@ -100,7 +94,7 @@ public class Select extends TypifiedElement {
     }
 
     /**
-     * Select the option at the given index. This is done by examing the "index" attribute of an
+     * Select the option at the given index. This is done by examining the "index" attribute of an
      * element, and not merely by counting.
      *
      * @param index The option at this index will be selected
@@ -143,7 +137,7 @@ public class Select extends TypifiedElement {
     }
 
     /**
-     * Deselect the option at the given index. This is done by examing the "index" attribute of an
+     * Deselect the option at the given index. This is done by examining the "index" attribute of an
      * element, and not merely by counting.
      *
      * @param index The option at this index will be deselected

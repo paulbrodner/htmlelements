@@ -4,6 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 
+import java.util.Optional;
+
 /**
  * Represents text input control (such as &lt;input type="text"/&gt; or &lt;textarea/&gt;).
  *
@@ -18,22 +20,6 @@ public class TextInput extends TypifiedElement {
      */
     public TextInput(WebElement wrappedElement) {
         super(wrappedElement);
-    }
-
-    /**
-     * Clears all the text entered into this text input.
-     */
-    public void clear() {
-        getWrappedElement().clear();
-    }
-
-    /**
-     * Prints specified char sequence into this text input.
-     *
-     * @param keys Text to print.
-     */
-    public void sendKeys(CharSequence... keys) {
-        getWrappedElement().sendKeys(keys);
     }
 
     /**
@@ -52,16 +38,13 @@ public class TextInput extends TypifiedElement {
      *
      * @return Text entered into the text input.
      */
+    @Override
     public String getText() {
         if ("textarea".equals(getWrappedElement().getTagName())) {
             return getWrappedElement().getText();
         }
 
-        String enteredText = getWrappedElement().getAttribute("value");
-        if (enteredText == null) {
-            return "";
-        }
-        return enteredText;
+        return Optional.ofNullable(getWrappedElement().getAttribute("value")).orElse("");
     }
 
     /**

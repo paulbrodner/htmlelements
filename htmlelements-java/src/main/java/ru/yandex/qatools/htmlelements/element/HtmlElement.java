@@ -2,9 +2,13 @@ package ru.yandex.qatools.htmlelements.element;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Point;
+import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.internal.WrapsElement;
+import org.openqa.selenium.Rectangle;
 
 import java.util.List;
 
@@ -19,7 +23,7 @@ import java.util.List;
  * <p/>
  * <pre class="code">
  * &#64;Name("Search Form")
- * &#64;Block(&#64;FindBy(css = "form_css"))
+ * &#64;FindBy(css = "form_css")
  * public class SearchForm extends HtmlElement {
  * &#64;Name("Request Input")
  * &#64;FindBy(css = "request_input_css")
@@ -81,6 +85,21 @@ public class HtmlElement implements WebElement, WrapsElement, Named {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * Determines whether or not this element exists on page.
+     *
+     * @return True if the element exists on page, false otherwise.
+     */
+    @SuppressWarnings("squid:S1166")  // Sonar "Exception handlers should preserve the original exception" rule
+    public boolean exists() {
+        try {
+            getWrappedElement().isDisplayed();
+        } catch (NoSuchElementException ignored) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -233,6 +252,14 @@ public class HtmlElement implements WebElement, WrapsElement, Named {
     }
 
     /**
+     * @return The location and size of the rendered element
+     */
+    @Override
+    public Rectangle getRect() {
+        return wrappedElement.getRect();
+    }
+
+    /**
      * Gets the value of a given CSS property. See {@link WebElement#getCssValue(String)} for more details.
      *
      * @param name Name of the property.
@@ -251,5 +278,10 @@ public class HtmlElement implements WebElement, WrapsElement, Named {
     @Override
     public String toString() {
         return name;
+    }
+
+    @Override
+    public <X> X getScreenshotAs(OutputType<X> outputType) throws WebDriverException {
+        return wrappedElement.getScreenshotAs(outputType);
     }
 }

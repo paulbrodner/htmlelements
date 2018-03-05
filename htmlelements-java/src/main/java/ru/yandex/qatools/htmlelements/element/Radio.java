@@ -49,49 +49,39 @@ public class Radio extends TypifiedElement {
      * @return {@code WebElement} representing selected radio button or {@code null} if no radio buttons are selected.
      */
     public WebElement getSelectedButton() {
-        for (WebElement button : getButtons()) {
-            if (button.isSelected()) {
-                return button;
-            }
-        }
-
-        throw new NoSuchElementException("No selected button");
+        return getButtons().stream()
+                .filter(WebElement::isSelected)
+                .findAny()
+                .orElseThrow(() -> new NoSuchElementException("No selected button"));
     }
 
     /**
-     * Indicates if radio has selected button.
+     * Indicates if radio group has selected button.
      *
      * @return {@code true} if radio has selected button and {@code false} otherwise.
      */
     public boolean hasSelectedButton() {
-        for (WebElement button : getButtons()) {
-            if (button.isSelected()) {
-                return true;
-            }
-        }
-
-        return false;
+        return getButtons().stream()
+                .anyMatch(WebElement::isSelected);
     }
 
     /**
-     * Selects radio button that have a value matching the specified argument.
+     * Selects first radio button that has a value matching the specified argument.
      *
      * @param value The value to match against.
      */
     public void selectByValue(String value) {
-        for (WebElement button : getButtons()) {
-            String buttonValue = button.getAttribute("value");
-            if (value.equals(buttonValue)) {
-                selectButton(button);
-                return;
-            }
-        }
+        WebElement matchingButton = getButtons().stream()
+                .filter(b -> value.equals(b.getAttribute("value")))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException(
+                        String.format("Cannot locate radio button with value: %s", value)));
 
-        throw new NoSuchElementException(String.format("Cannot locate radio button with value: %s", value));
+        selectButton(matchingButton);
     }
 
     /**
-     * Selects radio button by the given index.
+     * Selects a radio button by the given index.
      *
      * @param index Index of a radio button to be selected.
      */
@@ -99,14 +89,15 @@ public class Radio extends TypifiedElement {
         List<WebElement> buttons = getButtons();
 
         if (index < 0 || index >= buttons.size()) {
-            throw new NoSuchElementException(String.format("Cannot locate radio button with index: %d", index));
+            throw new NoSuchElementException(
+                    String.format("Cannot locate radio button with index: %d", index));
         }
 
         selectButton(buttons.get(index));
     }
 
     /**
-     * Selects radio button uf it's not already selected.
+     * Selects a radio button if it's not already selected.
      *
      * @param button {@code WebElement} representing radio button to be selected.
      */
